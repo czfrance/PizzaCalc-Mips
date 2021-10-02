@@ -30,14 +30,11 @@ main:
 
 
 calc_f:
-    addi    $sp, $sp, -20
+    addi    $sp, $sp, -12
     sw      $ra, 0($sp)
 
     move    $t0, $a0    #$t0 stores the number of recursion
     bnez    $t0, _recurse
-    # li      $t1, 0
-    # seq     $t2, $t0, $t1    #bnez    $t0, _recurse
-    # bnez    $t2, _recurse
     li      $v0, 2
     j       _endloop
 
@@ -49,26 +46,21 @@ _recurse:
     addi    $t0, $t0, 1
 
     sw      $t0, 4($sp)
-    sw      $t1, 8($sp)
-    sw      $t2, 12($sp)
-    sw      $t3, 16($sp)
+    sw      $t3, 8($sp)
 
     jal     calc_f
 
     lw      $t0, 4($sp)
-    lw      $t1, 8($sp)
-    lw      $t2, 12($sp)
-    lw      $t3, 16($sp)
+    lw      $t3, 8($sp)
 
     move    $t4, $v0
     add     $t0, $t0, $t4
     move    $v0, $t0
     j       _endloop
 
-
 _endloop:
     lw      $ra, 0($sp)
-    addi    $sp, $sp, 20
+    addi    $sp, $sp, 12
     jr      $ra
 
 
