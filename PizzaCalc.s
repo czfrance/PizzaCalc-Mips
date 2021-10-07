@@ -8,12 +8,12 @@ main:
     sw      $s1, 8($sp)
     sw      $s3, 12($sp)
     sw      $s4, 16($sp)
-    sw      $f20, 20($sp)
-    sw      $f21, 24($sp)
-    sw      $f22, 28($sp)
+    s.s     $f20, 20($sp)
+    s.s     $f21, 24($sp)
+    s.s     $f22, 28($sp)
 
     li      $s3, 0       #s3 is the head
-    #s3, s0, s1, f20, f21, f22, s4, a0
+    #registers in use - s3, s0, s1, f20, f21, f22, s4, a0
 _main_while_loop:
     #getting the pizza name
     la      $a0, namePrompt
@@ -71,16 +71,16 @@ _done_get_pizza:
     move    $a0, $s3
     jal     sort
     move    $a0, $v0
-    #move    $a0, $s3
     jal     print_list
+
     lw      $ra, 0($sp)
     lw      $s0, 4($sp)
     lw      $s1, 8($sp)
     lw      $s3, 12($sp)
     lw      $s4, 16($sp)
-    lw      $f20, 20($sp)
-    lw      $f21, 24($sp)
-    lw      $f22, 28($sp)
+    l.s     $f20, 20($sp)
+    l.s     $f21, 24($sp)
+    l.s     $f22, 28($sp)
     addi    $sp, $sp, 32
     jr      $ra
 
@@ -97,9 +97,6 @@ calc_ppd:
     mov.s   $f4, $f12       #4 = diameter  (12)
     mov.s   $f5, $f13       #5 = cost      (13)
     mtc1    $zero, $f6      #6 = zero
-    #li.s    $f6, 0
-    #sub.s   $f6, $f5, $f5
-    #li      $t0, 0
 
     #check if either are = 0. If so, go to 0
     c.eq.s  $f5, $f6
@@ -212,29 +209,6 @@ _while_print_list:
 
     j       _while_print_list
 _end_print_list:
-    lw      $ra, 0($sp)
-    addi    $sp, $sp, 4
-    jr      $ra 
-
-
-swap:
-    addi    $sp, $sp, -4
-    sw      $ra, 0($sp)
-
-    lw      $t0, 0($a0)     #t0 is p1->name
-    lw      $t1, 64($a0)    #t1 is p1->ppd
-    lw      $t2, 0($a1)     #t2 is p2->name
-    lw      $t3, 64($a1)    #t3 is p2->name
-    # move    $t0, $t4        #t4 is tempName
-    # move    $t1, $t5        #t5 is tempPpd
-
-    sw      $t0, 0($a1)
-    sw      $t1, 64($a1)
-    sw      $t2, 0($a0)
-    sw      $t3, 64($a0)
-
-    move    $v0, $a0
-    move    $v1, $a1
     lw      $ra, 0($sp)
     addi    $sp, $sp, 4
     jr      $ra 
