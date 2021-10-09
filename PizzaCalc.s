@@ -86,13 +86,8 @@ _done_get_pizza:
 
 
 calc_ppd:
-    addi    $sp, $sp, -24
+    addi    $sp, $sp, -4
     sw      $ra, 0($sp)
-    s.s     $f4, 4($sp)
-    s.s     $f5, 8($sp)
-    s.s     $f6, 12($sp)
-    s.s     $f7, 16($sp)
-    s.s     $f8, 20($sp)
 
     mov.s   $f4, $f12       #4 = diameter  (12)
     mov.s   $f5, $f13       #5 = cost      (13)
@@ -117,12 +112,7 @@ _zero:
     b       _end_ppd
 _end_ppd:
     sw      $ra, 0($sp)
-    s.s     $f4, 4($sp)
-    s.s     $f5, 8($sp)
-    s.s     $f6, 12($sp)
-    s.s     $f7, 16($sp)
-    s.s     $f8, 20($sp)
-    addi    $sp, $sp, 24
+    addi    $sp, $sp, 4
     jr      $ra
 
 
@@ -267,7 +257,7 @@ _sort_swap_nodes:
     sw      $t2, 12($sp)
     sw      $t3, 16($sp)
     sw      $t4, 20($sp)
-    sw      $t5, 24($sp)
+    sw      $t7, 24($sp)
     sw      $t8, 28($sp)
     jal     swap
     lw      $t0, 4($sp)
@@ -275,11 +265,10 @@ _sort_swap_nodes:
     lw      $t2, 12($sp)
     lw      $t3, 16($sp)
     lw      $t4, 20($sp)
-    lw      $t5, 24($sp)
+    lw      $t7, 24($sp)
     lw      $t8, 28($sp)
 
     beq     $t0, $t7, _movehead
-
 _end_end_1:
     move    $t0, $v0
     bne     $t4, $zero, _set_prev
@@ -292,7 +281,6 @@ _set_prev:
 _movehead:
     move    $t7, $v0
     j       _end_end_1
-
 _sort_cmp_names:
     la      $a0, 0($t0)
     la      $a1, 0($t1)
@@ -301,11 +289,17 @@ _sort_cmp_names:
     sw      $t1, 8($sp)
     sw      $t2, 12($sp)
     sw      $t3, 16($sp)
+    sw      $t4, 20($sp)
+    sw      $t7, 24($sp)
+    sw      $t8, 28($sp)
     jal     strcmp
     lw      $t0, 4($sp)
     lw      $t1, 8($sp)
     lw      $t2, 12($sp)
     lw      $t3, 16($sp)
+    lw      $t4, 20($sp)
+    lw      $t7, 24($sp)
+    lw      $t8, 28($sp)
 
     bgt     $v0, $zero, _sort_swap_nodes
     move    $t4, $t0
