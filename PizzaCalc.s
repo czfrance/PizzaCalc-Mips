@@ -219,10 +219,8 @@ swap:
 
     move    $t0, $a0    #t0 is node1
     move    $t1, $a1    #t1 is node2
-    #move    $t3, $a2    #t3 is prev
     lw      $t2, 68($t1)    #t2 is node2->next
 
-    #bne     $t4, $zero, _set_prev
     sw      $t0, 68($t1)    #put node1 into node2->next
     sw      $t2, 68($t0)    #put node2->next into node1->next
 
@@ -231,9 +229,6 @@ swap:
     lw      $ra, 0($sp)
     addi    $sp, $sp, 4
     jr      $ra
-
-# _set_prev:
-#     sw      $t1, 68($t3)
 
 sort:
     addi    $sp, $sp, -32
@@ -247,22 +242,6 @@ _while_outer_sort:
     li      $t8, 0          #the counter
     li      $t4, 0          #t4 is prev
 _while_sort:
-    # move    $a0, $t7
-    # sw      $t0, 4($sp)
-    # sw      $t1, 8($sp)
-    # sw      $t2, 12($sp)
-    # sw      $t3, 16($sp)
-    # sw      $t4, 20($sp)
-    # sw      $t5, 24($sp)
-    # sw      $t8, 28($sp)
-    # jal     print_list
-    # lw      $t0, 4($sp)
-    # lw      $t1, 8($sp)
-    # lw      $t2, 12($sp)
-    # lw      $t3, 16($sp)
-    # lw      $t4, 20($sp)
-    # lw      $t5, 24($sp)
-    # lw      $t8, 28($sp)
 
     lw      $t1, 68($t0)    #t1 is the next node
     beq     $zero, $t1, _end_sort
@@ -282,7 +261,6 @@ _sort_swap_nodes:
 
     move    $a0, $t0
     move    $a1, $t1
-    #move    $a2, $t4
 
     sw      $t0, 4($sp)
     sw      $t1, 8($sp)
