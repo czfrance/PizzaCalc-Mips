@@ -213,16 +213,57 @@ _end_print_list:
     addi    $sp, $sp, 4
     jr      $ra 
 
+swap:
+    addi    $sp, $sp, -4
+    sw      $ra, 0($sp)
+
+    move    $t0, $a0    #t0 is node1
+    move    $t1, $a1    #t1 is node2
+    #move    $t3, $a2    #t3 is prev
+    lw      $t2, 68($t1)    #t2 is node2->next
+
+    #bne     $t4, $zero, _set_prev
+    sw      $t0, 68($t1)    #put node1 into node2->next
+    sw      $t2, 68($t0)    #put node2->next into node1->next
+
+    move    $v0, $t1
+
+    lw      $ra, 0($sp)
+    addi    $sp, $sp, 4
+    jr      $ra
+
+# _set_prev:
+#     sw      $t1, 68($t3)
+
 sort:
     addi    $sp, $sp, -32
     sw      $ra, 0($sp)
 
     move    $t7, $a0
     move    $t0, $a0        #t0 is the head
+    
     beq     $t0, $zero, _end_sort
 _while_outer_sort:
     li      $t8, 0          #the counter
+    li      $t4, 0          #t4 is prev
 _while_sort:
+    # move    $a0, $t7
+    # sw      $t0, 4($sp)
+    # sw      $t1, 8($sp)
+    # sw      $t2, 12($sp)
+    # sw      $t3, 16($sp)
+    # sw      $t4, 20($sp)
+    # sw      $t5, 24($sp)
+    # sw      $t8, 28($sp)
+    # jal     print_list
+    # lw      $t0, 4($sp)
+    # lw      $t1, 8($sp)
+    # lw      $t2, 12($sp)
+    # lw      $t3, 16($sp)
+    # lw      $t4, 20($sp)
+    # lw      $t5, 24($sp)
+    # lw      $t8, 28($sp)
+
     lw      $t1, 68($t0)    #t1 is the next node
     beq     $zero, $t1, _end_sort
     
@@ -232,74 +273,48 @@ _while_sort:
     blt     $t2, $t3, _sort_swap_nodes
     beq     $t2, $t3, _sort_cmp_names
 
+    move    $t4, $t0
     move    $t0, $t1
+
     j       _while_sort
 _sort_swap_nodes:
     addi    $t8, $t8, 1
-    la      $t4, 0($t0)    #t4 is curr->name
-    la      $t5, 0($t1)    #t5 is next->name
-    la      $t6, name
 
-    move    $a0, $t4        #store temp curr name in t6
-    move    $a1, $t6
-    sw      $t0, 4($sp)
-    sw      $t1, 8($sp)
-    sw      $t2, 12($sp)
-    sw      $t3, 16($sp)
-    sw      $t5, 24($sp)
-    sw      $t8, 28($sp)
-    jal     strcpy
-    lw      $t0, 4($sp)
-    lw      $t1, 8($sp)
-    lw      $t2, 12($sp)
-    lw      $t3, 16($sp)
-    lw      $t5, 24($sp)
-    sw      $t8, 28($sp)
-    move    $t6, $v0
-
-    move    $a0, $t5            #swap name
-    move    $a1, $t0
-    sw      $t0, 4($sp)
-    sw      $t1, 8($sp)
-    sw      $t2, 12($sp)
-    sw      $t3, 16($sp)
-    sw      $t8, 20($sp)
-    sw      $t5, 24($sp)
-    sw      $t6, 28($sp)
-    jal     strcpy
-    lw      $t0, 4($sp)
-    lw      $t1, 8($sp)
-    lw      $t2, 12($sp)
-    lw      $t3, 16($sp)
-    sw      $t8, 20($sp)
-    lw      $t5, 24($sp)
-    lw      $t6, 28($sp)
-    move    $t0, $v0
-
-    move    $a0, $t6            #swap name
+    move    $a0, $t0
     move    $a1, $t1
+    #move    $a2, $t4
+
     sw      $t0, 4($sp)
     sw      $t1, 8($sp)
     sw      $t2, 12($sp)
     sw      $t3, 16($sp)
-    sw      $t8, 20($sp)
+    sw      $t4, 20($sp)
     sw      $t5, 24($sp)
-    sw      $t6, 28($sp)
-    jal     strcpy
+    sw      $t8, 28($sp)
+    jal     swap
     lw      $t0, 4($sp)
     lw      $t1, 8($sp)
     lw      $t2, 12($sp)
     lw      $t3, 16($sp)
-    sw      $t8, 20($sp)
+    lw      $t4, 20($sp)
     lw      $t5, 24($sp)
-    lw      $t6, 28($sp)
-    move    $t1, $v0
+    lw      $t8, 28($sp)
 
-    sw      $t2, 64($t1)    #swap ppd
-    sw      $t3, 64($t0)    #swap ppd
+    beq     $t0, $t7, _movehead
 
-    move    $t0, $t1
-    j       _while_sort
+_end_end_1:
+    move    $t0, $v0
+    bne     $t4, $zero, _set_prev
+_end_end_2:
+    move    $t4, $t0
+    j       _while_sort  
+_set_prev:
+    sw      $t0, 68($t4)
+    j       _end_end_2
+_movehead:
+    move    $t7, $v0
+    j       _end_end_1
+
 _sort_cmp_names:
     la      $a0, 0($t0)
     la      $a1, 0($t1)
@@ -315,6 +330,7 @@ _sort_cmp_names:
     lw      $t3, 16($sp)
 
     bgt     $v0, $zero, _sort_swap_nodes
+    move    $t4, $t0
     move    $t0, $t1
     j       _while_sort
 _end_sort:
